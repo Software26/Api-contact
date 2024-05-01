@@ -52,6 +52,33 @@ def get_contact(id):
     if not  contact : 
         return jsonify({"message":'Contacto no encontrado'}), 404
     return jsonify(contact.serialize() )
+
+@app.route("/contacts/<int:id>", methods=["GET","PUT"])
+def update_contact(id):
+    contact = Contact.query.get_or_404(id)
+    data = request.get_json()
+
+    if 'name' in data:
+        contact.name = data['name']
+    if 'email' in data:
+        contact.email = data['email']
+    if 'phone' in data:
+        contact.phone = data['phone']
+
+    db.session.commit()
+
+    return jsonify({"message": "Contacto actualizado con éxito", "contact": contact.serialize()}), 200
+
+@app.route("/contacts/<int:id>", methods=["DELETE"])
+def delete_contact(id):
+    # Buscar el contacto por su ID
+    contact = Contact.query.get_or_404(id)
     
+    # Eliminar el contacto de la base de datos
+    db.session.delete(contact)
+    db.session.commit()
+    
+    # Devolver una respuesta JSON indicando que el contacto ha sido eliminado con éxito
+    return jsonify({"message": "Contacto eliminado con éxito"}), 200
 if __name__ == "__main__":
     app.run(debug=True)
