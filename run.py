@@ -37,7 +37,14 @@ def get_contact():
     
 @app.route("/contacts", methods=["POST"])
 def create_contact():
-    return 'Crear contacts'
+    data = request.get_json()
+    contact = Contact(name =  data['name'], email = data["email"], phone = data["phone"])
+    db.session.add(contact)
+    db.session.commit()
+    
+    
+    return jsonify({"menssage":"contacto creado con exito", "contact": contact.serialize()})
+    
     
 if __name__ == "__main__":
     app.run(debug=True)
